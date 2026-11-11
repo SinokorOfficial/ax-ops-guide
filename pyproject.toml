@@ -1,0 +1,6 @@
+[project]
+name = "ax-ops-guide"
+version = "0.1.0"
+description = "AX 운영 안내 — GitHub · DB · Azure · 모니터링에서 현업과 전산팀이 하는 일"
+requires-python = ">=3.11"
+dependencies = ["mkdocs-material>=9.5"]

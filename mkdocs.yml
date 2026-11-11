@@ -1,0 +1,46 @@
+site_name: AX 운영 안내
+site_description: GitHub · DB · Azure · 모니터링에서 현업과 전산팀이 하는 일
+site_url: https://sinokorofficial.github.io/ax-ops-guide/
+repo_url: https://github.com/SinokorOfficial/ax-ops-guide
+docs_dir: docs
+theme:
+  name: material
+  language: ko
+  features:
+    - navigation.sections
+    - navigation.top
+    - content.code.copy
+  palette:
+    - scheme: default
+      primary: teal
+markdown_extensions:
+  - admonition
+  - attr_list
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+nav:
+  - 한눈에 보기: index.md
+  - 현업용:
+      - 내가 하는 일 · 전산팀이 하는 일: roles.md
+      - GitHub 쓰는 법: github.md
+      - DB 가 필요할 때: db.md
+      - Azure: azure.md
+      - 알림 카드 읽는 법: cards.md
+      - 알림 사전: alerts.md
+      - 알림이 오는 채널: channels.md
+      - 새 앱을 올릴 때: new-app.md
+      - 자주 묻는 질문: faq.md
+  - 전산팀용:
+      - GitHub 운영: it/github.md
+      - DB 운영: it/db.md
+      - Azure 운영: it/azure.md
+      - 모니터링 구성: it/monitoring.md
+      - 새 앱 등록 체크리스트: it/new-app-checklist.md
+      - 운영 메모: it/operations.md
+  - 바뀐 내용: changelog.md
