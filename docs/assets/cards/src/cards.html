@@ -31,6 +31,7 @@
   .attention { color: #c4314b; }
   .warning { color: #c15700; }
   .good { color: #237b4b; }
+  .note { color: #e0a800; }
   .dot { flex: none; width: 15px; height: 15px; border-radius: 50%; background: currentColor; }
   .icon { flex: none; width: 18px; height: 18px; }
   /* 설명용 번호(실제 카드에는 없음) */
@@ -176,6 +177,54 @@
         <div class="todo"><b>지금 할 일</b><ul><li>실행 기록에서 실패한 단계 확인</li><li>일시 오류면 「Re-run failed jobs」 로 재실행</li></ul></div>
         <div class="foot subtle">담당: 기획팀</div>
         <div class="actions"><span class="button">실행 기록 열기</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 7. 예약 작업 실패 카드 -->
+<section class="shot" id="schedule-fail">
+  <span class="sample">예시 화면</span>
+  <div class="msg">
+    <div class="avatar"><svg width="20" height="20"><use href="#pulse"/></svg></div>
+    <div class="post">
+      <div class="sender"><b>AX 모니터</b>1월 15일 오전 6:02</div>
+      <div class="card">
+        <div class="head warning"><span class="dot"></span>주의 — 일부 기능 영향</div>
+        <div class="title">자금팀 허브 · 예약 작업 실패</div>
+        <div class="subtle">2026-01-15 06:02 KST · GitHub Actions</div>
+        <div class="status">「자료 갱신」 실행 실패</div>
+        <dl class="facts">
+          <dt>브랜치</dt><dd>main</dd>
+          <dt>실행</dt><dd>(실행한 계정)</dd>
+          <dt>영향</dt><dd>이 작업이 채우는 자료 미갱신 가능</dd>
+        </dl>
+        <div class="todo"><b>지금 할 일</b><ul><li>실행 기록에서 실패한 단계 확인</li><li>일시 오류면 「Re-run failed jobs」 로 재실행</li></ul></div>
+        <div class="foot subtle">담당: 자금팀</div>
+        <div class="actions"><span class="button">실행 기록 열기</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 8. 참고 등급 카드 — 「로그 부족 — 코드 개선 필요」 안내 -->
+<section class="shot" id="loggap">
+  <span class="sample">예시 화면</span>
+  <div class="msg">
+    <div class="avatar"><svg width="20" height="20"><use href="#pulse"/></svg></div>
+    <div class="post">
+      <div class="sender"><b>AX 모니터</b>1월 15일 오전 11:10</div>
+      <div class="card">
+        <div class="head"><span class="dot note"></span>참고 — 당장 영향 없음</div>
+        <div class="title">기획팀 포탈 · 로그 부족 — 코드 개선 필요</div>
+        <div class="subtle">2026-01-15 11:10 KST · AX 모니터</div>
+        <div class="status">호출 실패를 남기는 로그가 없어 원인별 알림을 걸지 못함</div>
+        <dl class="facts">
+          <dt>추정 원인</dt><dd>앱이 실패 상황을 로그로 남기지 않음</dd>
+          <dt>영향</dt><dd>장애 시 원인별 알림 불가 (공통 알림만 동작)</dd>
+        </dl>
+        <div class="todo"><b>지금 할 일</b><ul><li>담당 팀: 호출 실패 시 한 줄 로그 기록(이벤트 이름·상태 코드)</li><li>반영 뒤 전산팀에 알림 추가 요청</li></ul></div>
+        <div class="foot subtle">담당: 기획팀 · 규칙 (전산팀용 이름)</div>
       </div>
     </div>
   </div>

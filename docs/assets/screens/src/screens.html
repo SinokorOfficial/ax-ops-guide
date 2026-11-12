@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>따라 하기 예시 화면</title>
+<!-- GitHub 화면 배치를 본뜬 예시 그림. 값은 모두 지어낸 것. shoot.js 가 .shot 마다 PNG 한 장으로 찍는다.
+     단추 이름은 GitHub 화면의 영어 그대로, 이슈 양식 칸은 앱 저장소의 이슈 양식 그대로 적는다. -->
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: "Noto Sans CJK KR", "Segoe UI", sans-serif; font-size: 14px; line-height: 21px; color: #1f2328; background: #f5f5f5; }
+  .shot { position: relative; width: 900px; padding: 38px 24px 24px; background: #f5f5f5; }
+  .sample { position: absolute; top: 10px; right: 24px; font-size: 12px; line-height: 18px; color: #616161; border: 1px solid #c7c7c7; border-radius: 9px; padding: 0 9px; background: #fff; }
+  .win { position: relative; background: #fff; border: 1px solid #d0d7de; border-radius: 8px; overflow: hidden; }
+  .win + .win { margin-top: 30px; }
+  /* 저장소 머리 · 탭 */
+  .crumb { padding: 12px 20px 0; font-size: 15px; background: #f6f8fa; }
+  .crumb b { font-weight: 700; }
+  .crumb .sep { color: #656d76; margin: 0 6px; }
+  .tabs { display: flex; gap: 6px; padding: 8px 14px 0; background: #f6f8fa; border-bottom: 1px solid #d0d7de; }
+  .tab { position: relative; padding: 6px 10px 9px; border-bottom: 2px solid transparent; white-space: nowrap; }
+  .tab.on { font-weight: 700; border-bottom-color: #fd8c73; }
+  .body { position: relative; padding: 18px 20px 20px; }
+  .rowline { position: relative; display: flex; align-items: center; gap: 8px; }
+  .grow { flex: 1; }
+  .btn { position: relative; display: inline-flex; align-items: center; gap: 6px; border: 1px solid #d0d7de; border-radius: 6px; padding: 4px 12px; font-weight: 600; background: #f6f8fa; white-space: nowrap; }
+  .btn.green { background: #1f883d; border-color: #1a7f37; color: #fff; }
+  .caret::after { content: ""; display: inline-block; border: 4px solid transparent; border-top-color: currentColor; margin: 4px 0 0 2px; }
+  .menu { position: absolute; right: 96px; top: 52px; width: 190px; background: #fff; border: 1px solid #d0d7de; border-radius: 8px; box-shadow: 0 8px 24px rgba(140, 149, 159, .3); padding: 6px; z-index: 3; }
+  .menu div { position: relative; padding: 5px 10px; border-radius: 6px; }
+  .menu .pick { background: #eef1f4; font-weight: 600; }
+  .files { margin-top: 14px; border: 1px solid #d0d7de; border-radius: 6px; }
+  .files div { padding: 8px 14px; border-top: 1px solid #d8dee4; color: #1f2328; display: flex; gap: 10px; }
+  .files div:first-child { border-top: 0; background: #f6f8fa; color: #656d76; }
+  .files span.muted { margin-left: auto; }
+  .muted { color: #656d76; }
+  .small { font-size: 12px; line-height: 18px; }
+  .drop { border: 1px dashed #afb8c1; border-radius: 6px; padding: 26px 0 22px; text-align: center; position: relative; }
+  .drop b { display: block; font-size: 18px; line-height: 28px; font-weight: 600; }
+  .link { color: #0969da; }
+  .picked { margin-top: 10px; border: 1px solid #d0d7de; border-radius: 6px; padding: 8px 14px; }
+  .box { position: relative; margin-top: 16px; border: 1px solid #d0d7de; border-radius: 6px; padding: 14px 16px; }
+  .box h4 { font-size: 15px; font-weight: 600; margin-bottom: 8px; }
+  .input { position: relative; border: 1px solid #d0d7de; border-radius: 6px; padding: 5px 12px; background: #fff; min-height: 32px; }
+  .input.area { min-height: 62px; }
+  .ph { color: #8c959f; }
+  .radio { position: relative; display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+  .radio i { flex: none; width: 14px; height: 14px; border-radius: 50%; border: 1px solid #6e7781; background: #fff; }
+  .radio.on i { border: 4px solid #0969da; }
+  code, .code { font-family: "DejaVu Sans Mono", monospace; font-size: 12px; background: #eef1f4; border-radius: 6px; padding: 1px 6px; }
+  .branch { font-family: "DejaVu Sans Mono", monospace; font-size: 12px; color: #0969da; background: #ddf4ff; border-radius: 6px; padding: 1px 7px; }
+  .banner { position: relative; display: flex; align-items: center; gap: 10px; background: #fff8c5; border: 1px solid #d4a72c; border-radius: 6px; padding: 10px 14px; }
+  h3.page { font-size: 20px; line-height: 30px; font-weight: 600; }
+  .compare { position: relative; display: flex; align-items: center; gap: 8px; margin-top: 10px; padding: 10px 12px; background: #f6f8fa; border: 1px solid #d0d7de; border-radius: 6px; }
+  .ok { color: #1a7f37; font-weight: 600; }
+  .label { display: block; font-weight: 600; margin: 12px 0 4px; }
+  .req { color: #cf222e; }
+  .state { display: inline-flex; align-items: center; gap: 6px; border-radius: 16px; padding: 3px 12px; font-weight: 600; color: #fff; background: #1f883d; }
+  .state.done { background: #8250df; }
+  .checks { position: relative; margin-top: 14px; border: 1px solid #d0d7de; border-radius: 6px; }
+  .checks > div { position: relative; padding: 10px 14px; border-top: 1px solid #d8dee4; display: flex; align-items: center; gap: 10px; }
+  .checks > div:first-child { border-top: 0; }
+  .checks .mergebar { background: #f6f8fa; }
+  .ic { flex: none; width: 18px; height: 18px; }
+  .pill { display: inline-block; font-size: 12px; line-height: 20px; font-weight: 600; border-radius: 12px; padding: 0 9px; border: 1px solid transparent; white-space: nowrap; }
+  .pill.it { background: #ddf4ff; border-color: #80ccff; color: #0550ae; }
+  .pill.biz { background: #dafbe1; border-color: #6fdd8b; color: #116329; }
+  .pill.kind { background: #f1e9ff; border-color: #c9adff; color: #5b2bb5; }
+  .tpl { position: relative; display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-top: 1px solid #d8dee4; }
+  .tpl:first-child { border-top: 0; }
+  .tpl b { display: block; font-weight: 600; }
+  .chev { margin-left: auto; color: #656d76; font-size: 18px; }
+  .check { position: relative; display: flex; align-items: center; gap: 8px; }
+  .check i { flex: none; width: 14px; height: 14px; border-radius: 3px; background: #0969da; position: relative; }
+  .check i::after { content: ""; position: absolute; left: 4px; top: 1px; width: 4px; height: 8px; border: solid #fff; border-width: 0 2px 2px 0; transform: rotate(45deg); }
+  .issue { display: grid; grid-template-columns: 1fr 200px; gap: 20px; margin-top: 14px; }
+  .side { position: relative; border-left: 1px solid #d8dee4; padding-left: 16px; }
+  .side h5 { font-size: 12px; font-weight: 600; color: #656d76; margin-bottom: 6px; }
+  .side .pill { margin-bottom: 4px; }
+  .cmt { position: relative; display: flex; gap: 10px; margin-bottom: 12px; }
+  .who { flex: none; width: 32px; height: 32px; border-radius: 50%; color: #fff; font-weight: 700; font-size: 13px; display: flex; align-items: center; justify-content: center; }
+  .who.biz { background: #2da44e; }
+  .who.it { background: #0969da; }
+  .bubble { flex: 1; border: 1px solid #d0d7de; border-radius: 6px; }
+  .bubble .hd { background: #f6f8fa; border-bottom: 1px solid #d0d7de; border-radius: 6px 6px 0 0; padding: 5px 12px; color: #656d76; font-size: 13px; }
+  .bubble .hd b { color: #1f2328; }
+  .bubble .bd { padding: 8px 12px; }
+  .event { position: relative; display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin: 0 0 12px 42px; font-size: 13px; color: #656d76; }
+  .event b { color: #1f2328; }
+  .statusrow { position: relative; display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-top: 1px solid #d8dee4; }
+  .statusrow:first-child { border-top: 0; }
+  .statusrow .mean { margin-left: auto; font-weight: 700; }
+  .spin { flex: none; width: 18px; height: 18px; border-radius: 50%; border: 3px solid #f0d58c; border-top-color: #bf8700; }
+  /* 설명용 번호(실제 화면에는 없음) */
+  .no { position: absolute; z-index: 5; width: 26px; height: 26px; border-radius: 50%; background: #00796b; color: #fff; font-size: 14px; line-height: 22px; font-weight: 700; text-align: center; border: 2px solid #fff; box-shadow: 0 0 0 1px #00796b; }
+  .no.r { right: -34px; top: 50%; transform: translateY(-50%); }
+  .no.l { left: -34px; top: 50%; transform: translateY(-50%); }
+  /* 한 장 그림 */
+  .ov { display: grid; grid-template-columns: 1fr 86px 1fr; align-items: stretch; }
+  .col { background: #fff; border: 1px solid #d0d7de; border-radius: 12px; padding: 16px 18px 18px; }
+  .col h3 { font-size: 19px; line-height: 28px; font-weight: 700; }
+  .col p.sub { color: #656d76; margin-bottom: 10px; }
+  .col.biz { border-top: 5px solid #2da44e; }
+  .col.it { border-top: 5px solid #0969da; }
+  .tile { display: flex; align-items: center; gap: 14px; border: 1px solid #d8dee4; border-radius: 10px; padding: 12px 14px; margin-top: 10px; background: #fbfcfd; }
+  .tile svg { flex: none; width: 46px; height: 46px; }
+  .tile b { display: block; font-size: 18px; line-height: 26px; font-weight: 700; }
+  .tile .n { color: #00796b; margin-right: 4px; }
+  .mid { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; text-align: center; font-size: 12px; line-height: 17px; font-weight: 700; color: #00695c; }
+  .mid svg { width: 62px; height: 40px; }
+  .itlist { margin-top: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .itlist div { border: 1px solid #d8dee4; border-radius: 10px; padding: 12px 6px; text-align: center; font-weight: 700; background: #fbfcfd; }
+  .itlist svg { display: block; width: 40px; height: 40px; margin: 0 auto 6px; }
+  .foot { margin-top: 12px; text-align: center; font-weight: 700; color: #1f2328; background: #e6f4f1; border: 1px solid #b2dfdb; border-radius: 10px; padding: 9px 12px; }
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <symbol id="okc" viewBox="0 0 18 18"><circle cx="9" cy="9" r="8" fill="#1a7f37"/><path d="M5 9 L8 12 L13 6" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="xc" viewBox="0 0 18 18"><circle cx="9" cy="9" r="8" fill="#cf222e"/><path d="M6 6 L12 12 M12 6 L6 12" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="up" viewBox="0 0 46 46"><rect x="3" y="3" width="40" height="40" rx="10" fill="#dafbe1"/><path d="M23 33 V15 M15 22 L23 14 L31 22" fill="none" stroke="#1a7f37" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="ask" viewBox="0 0 46 46"><rect x="3" y="3" width="40" height="40" rx="10" fill="#ddf4ff"/><path d="M12 14 H34 V28 H22 L15 34 V28 H12 Z" fill="none" stroke="#0969da" stroke-width="3" stroke-linejoin="round"/><path d="M17 19 H29 M17 23 H25" stroke="#0969da" stroke-width="3" stroke-linecap="round"/></symbol>
+    <symbol id="bell" viewBox="0 0 46 46"><rect x="3" y="3" width="40" height="40" rx="10" fill="#fff1e5"/><path d="M15 29 V22 C15 16 19 13 23 13 C27 13 31 16 31 22 V29 Z M12 29 H34 M21 33 H25" fill="none" stroke="#bc4c00" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="key" viewBox="0 0 40 40"><circle cx="14" cy="20" r="7" fill="none" stroke="#0969da" stroke-width="3"/><path d="M21 20 H35 M30 20 V26 M35 20 V25" fill="none" stroke="#0969da" stroke-width="3" stroke-linecap="round"/></symbol>
+    <symbol id="db" viewBox="0 0 40 40"><ellipse cx="20" cy="10" rx="12" ry="5" fill="none" stroke="#0969da" stroke-width="3"/><path d="M8 10 V30 C8 33 13 35 20 35 C27 35 32 33 32 30 V10 M8 20 C8 23 13 25 20 25 C27 25 32 23 32 20" fill="none" stroke="#0969da" stroke-width="3"/></symbol>
+    <symbol id="cloud" viewBox="0 0 40 40"><path d="M12 30 H29 C33 30 36 27 36 23 C36 19 33 17 30 17 C29 12 25 9 20 9 C15 9 11 12 10 17 C6 18 4 21 4 24 C4 27 7 30 12 30 Z" fill="none" stroke="#0969da" stroke-width="3" stroke-linejoin="round"/></symbol>
+    <symbol id="pulse2" viewBox="0 0 40 40"><path d="M4 22 H12 L16 10 L24 30 L28 18 H36" fill="none" stroke="#0969da" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="both" viewBox="0 0 62 40"><path d="M6 13 H52 M44 5 L52 13 L44 21" fill="none" stroke="#00796b" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M56 30 H10 M18 22 L10 30 L18 38" fill="none" stroke="#00796b" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  </defs>
+</svg>
+
+<!-- 0. 한 장 그림 — 현업이 하는 일 3가지 · 전산팀이 하는 일 -->
+<section class="shot" id="overview">
+  <span class="sample">한 장 그림</span>
+  <div class="ov">
+    <div class="col biz">
+      <h3>현업이 하는 일 3가지</h3>
+      <p class="sub">우리 팀 앱</p>
+      <div class="tile"><svg><use href="#up"/></svg><div><b><span class="n">①</span>올린다</b>고친 화면을 GitHub 에 올리고 합친다</div></div>
+      <div class="tile"><svg><use href="#ask"/></svg><div><b><span class="n">②</span>요청한다</b>필요한 것은 이슈로 전산팀에</div></div>
+      <div class="tile"><svg><use href="#bell"/></svg><div><b><span class="n">③</span>카드 본다</b>Teams 우리 팀 채널의 알림 카드</div></div>
+    </div>
+    <div class="mid"><svg><use href="#both"/></svg>GitHub<br>이슈로<br>주고받음</div>
+    <div class="col it">
+      <h3>전산팀이 하는 일</h3>
+      <p class="sub">앱이 올라가 있는 바닥을 준비 · 운영</p>
+      <div class="itlist">
+        <div><svg><use href="#key"/></svg>로그인 · 백엔드</div>
+        <div><svg><use href="#db"/></svg>DB</div>
+        <div><svg><use href="#cloud"/></svg>Azure · 배포 길</div>
+        <div><svg><use href="#pulse2"/></svg>알림 설정</div>
+      </div>
+      <div class="tile" style="margin-top:10px"><svg><use href="#ask"/></svg><div><b>회신한다</b>이슈에 답 · 결과를 남긴다</div></div>
+    </div>
+  </div>
+  <div class="foot">현업은 DB · Azure 에 직접 손대지 않습니다 — 필요하면 ② 요청</div>
+</section>
+
+<!-- 1. 파일 올리기 ① — Add file › Upload files -->
+<section class="shot" id="upload-menu">
+  <span class="sample">예시 화면</span>
+  <div class="win">
+    <div class="crumb">회사-조직<span class="sep">/</span><b>우리-팀-앱</b></div>
+    <div class="tabs"><span class="tab on">Code</span><span class="tab">Issues</span><span class="tab">Pull requests</span><span class="tab">Actions</span></div>
+    <div class="body" style="padding-bottom:40px">
+      <div class="rowline">
+        <span class="btn caret">develop<span class="no r">1</span></span>
+        <span style="position:relative;margin-left:44px"><span class="link">우리-팀-앱</span><span class="sep muted"> / </span><span class="link">docs</span><span class="sep muted"> / </span><span class="link">db</span><span class="sep muted"> / </span><span class="link">request</span><span class="sep muted"> / </span><b>order</b><span class="no r">2</span></span>
+        <span class="grow"></span>
+        <span class="btn caret">Add file<span class="no l">3</span></span>
+        <span class="btn green caret">Code</span>
+      </div>
+      <div class="menu"><div>Create new file</div><div class="pick">Upload files<span class="no r">4</span></div></div>
+      <div class="files">
+        <div>우리 팀 계정<span class="muted">요약 추가</span><span class="muted">2026-01-15</span></div>
+        <div>..</div>
+        <div>00_요약.md</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 2. 파일 올리기 ② — 파일 끌어다 놓기 · Commit changes -->
+<section class="shot" id="upload-commit">
+  <span class="sample">예시 화면</span>
+  <div class="win">
+    <div class="crumb" style="padding-bottom:12px;border-bottom:1px solid #d0d7de">회사-조직<span class="sep">/</span><b>우리-팀-앱</b><span class="sep">/</span>docs<span class="sep">/</span>db<span class="sep">/</span>request<span class="sep">/</span>order</div>
+    <div class="body" style="padding-right:56px">
+      <div class="drop"><b>Drag files here to add them to your repository</b><span class="muted">Or <span class="link">choose your files</span></span><span class="no r">1</span></div>
+      <div class="picked rowline">01_명세.md<span class="no r">2</span></div>
+      <div class="box">
+        <h4>Commit changes</h4>
+        <div class="input">DB 요청 명세 추가 — 주문 목록 납기일<span class="no r">3</span></div>
+        <div class="input area" style="margin-top:8px"><span class="ph">Add an optional extended description…</span></div>
+        <div class="radio on"><i></i>Commit directly to the <code>develop</code> branch.<span class="no r">4</span></div>
+        <div class="radio"><i></i>Create a new branch for this commit and start a pull request.</div>
+      </div>
+      <div class="rowline" style="margin-top:14px"><span class="btn green">Commit changes<span class="no r">5</span></span><span class="btn" style="margin-left:34px">Cancel</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 3. PR 만들기 — develop → main -->
+<section class="shot" id="pr-create">
+  <span class="sample">예시 화면</span>
+  <div class="win">
+    <div class="crumb">회사-조직<span class="sep">/</span><b>우리-팀-앱</b></div>
+    <div class="tabs"><span class="tab">Code</span><span class="tab">Issues</span><span class="tab on" style="margin-right:30px">Pull requests<span class="no r" style="right:-30px">1</span></span><span class="tab">Actions</span></div>
+    <div class="body" style="padding-right:56px">
+      <div class="banner"><span class="branch">develop</span> had recent pushes 1 minute ago<span class="grow"></span><span class="btn green">Compare &amp; pull request<span class="no r">2</span></span></div>
+    </div>
+  </div>
+  <div class="win">
+    <div class="body" style="padding-right:56px">
+      <h3 class="page">Open a pull request</h3>
+      <div class="compare"><span class="btn caret">base: main</span>←<span class="btn caret">compare: develop</span><span class="ok">✓ Able to merge.</span><span class="no r">3</span></div>
+      <span class="label">Add a title</span>
+      <div class="input">주문 화면 — 납기일 칸 추가<span class="no r">4</span></div>
+      <span class="label">Add a description</span>
+      <div class="input area">## 무엇을 · 왜<br>- 주문 목록에 납기일 칸을 보이게 함</div>
+      <div class="rowline" style="margin-top:14px"><span class="grow"></span><span class="btn green caret">Create pull request<span class="no r">5</span></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 4. PR 합치기 — Merge pull request › Confirm merge -->
+<section class="shot" id="pr-merge">
+  <span class="sample">예시 화면</span>
+  <div class="win">
+    <div class="body" style="padding-right:56px">
+      <h3 class="page">주문 화면 — 납기일 칸 추가 <span class="muted" style="font-weight:400">#12</span></h3>
+      <div class="rowline" style="margin-top:6px"><span class="state">Open</span><span class="muted">우리 팀 계정 wants to merge 3 commits into</span><span class="branch">main</span><span class="muted">from</span><span class="branch">develop</span><span class="no r">1</span></div>
+      <div class="checks">
+        <div><svg class="ic"><use href="#okc"/></svg><b>All checks have passed</b><span class="no r">2</span></div>
+        <div><svg class="ic"><use href="#okc"/></svg>검증<span class="muted">Successful in 3m</span></div>
+        <div class="mergebar"><span class="btn green caret">Merge pull request<span class="no r">3</span></span></div>
+      </div>
+    </div>
+  </div>
+  <div class="win">
+    <div class="body" style="padding-right:56px">
+      <div class="checks" style="margin-top:0">
+        <div style="display:block"><span class="label" style="margin-top:0">Commit message</span><div class="input">Merge pull request #12 from 회사-조직/develop</div></div>
+        <div class="mergebar"><span class="btn green">Confirm merge<span class="no r">4</span></span><span class="btn" style="margin-left:34px">Cancel</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="win">
+    <div class="body" style="padding-right:56px">
+      <div class="rowline"><span class="state done">Merged</span><b>Pull request successfully merged and closed</b><span class="no r">5</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 5. 배포 상태 세 가지 -->
+<section class="shot" id="actions-status">
+  <span class="sample">예시 화면</span>
+  <div class="win" style="overflow:visible">
+    <div class="statusrow"><span class="spin"></span><div><b>주문 화면 — 납기일 칸 추가</b><div class="muted small">빌드 · 배포 #31 · main</div></div><span class="mean" style="color:#9a6700">노랑 — 도는 중</span></div>
+    <div class="statusrow"><svg class="ic"><use href="#okc"/></svg><div><b>주문 화면 — 납기일 칸 추가</b><div class="muted small">빌드 · 배포 #31 · main</div></div><span class="mean" style="color:#1a7f37">초록 — 성공(운영에 반영됨)</span></div>
+    <div class="statusrow"><svg class="ic"><use href="#xc"/></svg><div><b>주문 화면 — 납기일 칸 추가</b><div class="muted small">빌드 · 배포 #31 · main</div></div><span class="mean" style="color:#cf222e">빨강 — 실패(기존 버전 그대로)</span></div>
+  </div>
+</section>
+
+<!-- 6. 이슈 새로 열기 — 양식 고르기 -->
+<section class="shot" id="issue-new">
+  <span class="sample">예시 화면</span>
+  <div class="win" style="overflow:visible">
+    <div class="body" style="padding-right:56px">
+      <h3 class="page" style="margin-bottom:10px">Create new issue</h3>
+      <div class="checks" style="margin-top:0;display:block">
+        <div class="tpl"><div><b>DB 요청</b><span class="muted">표 · 프로시저 · 매니페스트(백엔드 오퍼레이션)가 필요할 때 전산팀에 요청합니다</span></div><span class="chev">›</span><span class="no r">1</span></div>
+        <div class="tpl"><div><b>질문 · 결정</b><span class="muted">사람이 정해야 할 것 — 선택지와 권하는 안을 함께</span></div><span class="chev">›</span><span class="no r">2</span></div>
+        <div class="tpl"><div><b>전산팀에 부탁</b><span class="muted">앱 등록 · 권한 · 배포 등 전산팀이 해 줘야 하는 일을 부탁합니다</span></div><span class="chev">›</span><span class="no r">3</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 7. 「DB 요청」 양식을 채운 모습 -->
+<section class="shot" id="issue-db-form">
+  <span class="sample">예시 화면</span>
+  <div class="win">
+    <div class="body" style="padding-right:56px">
+      <h3 class="page">Create new issue <span class="muted" style="font-weight:400;font-size:15px">— DB 요청</span></h3>
+      <span class="label">Add a title <span class="req">*</span></span>
+      <div class="input">[DB] order v1 — 주문 목록에 납기일 칸이 필요합니다<span class="no r">1</span></div>
+      <span class="label">업무 · 판 <span class="req">*</span></span>
+      <div class="input">order v1<span class="no r">2</span></div>
+      <span class="label">화면</span>
+      <div class="input">주문 목록</div>
+      <span class="label">필요한 것 <span class="req">*</span></span>
+      <div class="input area">주문 목록에 납기일을 보이게 해 주세요<span class="no r">3</span></div>
+      <span class="label">명세 파일</span>
+      <div class="input"><span style="font-family:'DejaVu Sans Mono',monospace;font-size:13px">docs/db/request/order/01_명세.md</span><span class="no r">4</span></div>
+      <span class="label">급한 정도 <span class="req">*</span></span>
+      <div class="rowline"><span class="btn caret" style="background:#fff;font-weight:400">다음 주</span><span class="no r" style="right:auto;left:106px">5</span></div>
+      <span class="label">확인</span>
+      <div class="check"><i></i>이름 · 사번 · 연락처 · 조회 결과 원본 · 비밀 값을 적지 않았습니다 <span class="req">*</span><span class="no r">6</span></div>
+      <div class="rowline" style="margin-top:16px"><span class="grow"></span><span class="btn">Cancel</span><span class="btn green">Create<span class="no r">7</span></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 8. 이슈에서 차례가 넘어가는 모습 -->
+<section class="shot" id="issue-turns">
+  <span class="sample">예시 화면</span>
+  <div class="win">
+    <div class="body">
+      <h3 class="page">[DB] order v1 — 주문 목록에 납기일 칸이 필요합니다 <span class="muted" style="font-weight:400">#7</span></h3>
+      <div class="rowline" style="margin-top:6px"><span class="state">Open</span><span class="muted">우리 팀 계정 opened on 2026-01-15</span></div>
+      <div class="issue">
+        <div style="padding-right:36px">
+          <div class="cmt"><span class="who biz">현업</span><div class="bubble"><div class="hd"><b>우리 팀 계정</b> · 현업</div><div class="bd">명세 파일: <span class="code">docs/db/request/order/01_명세.md</span></div></div><span class="no r">1</span></div>
+          <div class="event"><b>우리 팀 계정</b> added <span class="pill it">주인:전산팀</span><span class="pill kind">종류:DB요청</span></div>
+          <div class="cmt"><span class="who it">전산</span><div class="bubble"><div class="hd"><b>전산팀 계정</b> · 전산팀</div><div class="bd">접수했습니다.</div></div><span class="no r">2</span></div>
+          <div class="cmt"><span class="who it">전산</span><div class="bubble"><div class="hd"><b>전산팀 계정</b> · 전산팀</div><div class="bd">통지문: <span class="code">docs/db/delivery/order_v1.md</span></div></div><span class="no r">3</span></div>
+          <div class="event" style="margin-right:-36px;padding-right:36px"><b>전산팀 계정</b> added <span class="pill biz">주인:현업</span> and removed <span class="pill it">주인:전산팀</span><span class="no r" style="right:0">4</span></div>
+          <div class="cmt"><span class="who biz">현업</span><div class="bubble"><div class="hd"><b>우리 팀 계정</b> · 현업</div><div class="bd">화면에 연결해 확인했습니다.</div></div><span class="no r">5</span></div>
+          <div class="rowline" style="margin-left:42px"><span class="grow"></span><span class="btn caret"><svg class="ic" style="width:16px;height:16px"><use href="#okc"/></svg>Close issue<span class="no l">6</span></span><span class="btn green" style="margin-left:0">Comment</span></div>
+        </div>
+        <div class="side">
+          <h5>Labels</h5>
+          <span class="pill biz">주인:현업</span><br><span class="pill kind">종류:DB요청</span>
+          <span class="no" style="left:-14px;top:-6px">4</span>
+          <p class="muted small" style="margin-top:10px">차례가 바뀌면<br>여기 라벨이 바뀝니다</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</body>
+</html>

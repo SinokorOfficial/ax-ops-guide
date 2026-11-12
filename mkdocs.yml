@@ -3,6 +3,9 @@ site_description: GitHub · DB · Azure · 모니터링에서 현업과 전산�
 site_url: https://sinokorofficial.github.io/ax-ops-guide/
 repo_url: https://github.com/SinokorOfficial/ax-ops-guide
 docs_dir: docs
+# 그림 원본(HTML · 찍는 스크립트)은 사이트에 싣지 않는다
+exclude_docs: |
+  assets/*/src/
 theme:
   name: material
   language: ko
@@ -13,6 +16,8 @@ theme:
   palette:
     - scheme: default
       primary: teal
+validation:
+  anchors: warn
 markdown_extensions:
   - admonition
   - attr_list
@@ -29,6 +34,7 @@ nav:
   - 현업용:
       - 내가 하는 일 · 전산팀이 하는 일: roles.md
       - GitHub 쓰는 법: github.md
+      - 요청하는 법(이슈): issues.md
       - DB 가 필요할 때: db.md
       - Azure: azure.md
       - 알림 카드 읽는 법: cards.md
