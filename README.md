@@ -21,3 +21,4 @@ AX 운영 앱을 둘러싼 네 영역 — **GitHub · DB · Azure · 모니터�
 - 틀린 곳 · 빠진 곳은 이 저장소에 이슈로 남깁니다.
 - 올리기 전에 `uv run mkdocs build --strict` 가 통과해야 합니다.
 - **공개 문서입니다.** 사람 이름 · 계정 · 자원 이름 · 접속 주소 · 채널 ID · 실제 장애 수치 · 업무 데이터를 적지 않습니다.
+- 카드 예시 화면(`docs/assets/cards/*.png`)은 `docs/assets/cards/src/cards.html` 을 고친 뒤 `NODE_PATH=<playwright 가 설치된 node_modules> node docs/assets/cards/src/shoot.js` 로 다시 찍습니다.
